@@ -18,7 +18,8 @@ async function run() {
       core.info(`Branch ${branch} already exists`);
     }
   } catch (error) {
-    core.setFailed(error.message);
+    core.debug(error.stack ?? 'Undefined stack');
+    core.setFailed(error.message ?? 'Unknown error');
   }
 }
 run();
