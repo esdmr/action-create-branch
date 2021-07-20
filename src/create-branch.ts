@@ -2,6 +2,7 @@ import { Context } from "@actions/github/lib/context";
 import { getOctokit } from "@actions/github";
 
 type GitHub = ReturnType<typeof getOctokit>;
+const SHA1_EMPTY_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
 
 export async function createBranch(github: any, context: Context, branch: string, orphan: boolean, sha?: string) {
   const toolkit : GitHub = github(githubToken());
@@ -19,14 +20,9 @@ export async function createBranch(github: any, context: Context, branch: string
     } catch(error) {
       if(error.name === 'HttpError' && error.status === 404) {
         if(orphan) {
-          const tree = await toolkit.rest.git.createTree({
-            tree: [],
-            ...context.repo
-          });
-
           const commit = await toolkit.rest.git.createCommit({
             message: 'Initial commit',
-            tree: tree.data.sha,
+            tree: SHA1_EMPTY_TREE,
             parents: [],
             ...context.repo
           });

@@ -566,6 +566,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createBranch = void 0;
+const SHA1_EMPTY_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
 function createBranch(github, context, branch, orphan, sha) {
     return __awaiter(this, void 0, void 0, function* () {
         const toolkit = github(githubToken());
@@ -579,8 +580,7 @@ function createBranch(github, context, branch, orphan, sha) {
         catch (error) {
             if (error.name === 'HttpError' && error.status === 404) {
                 if (orphan) {
-                    const tree = yield toolkit.rest.git.createTree(Object.assign({ tree: [] }, context.repo));
-                    const commit = yield toolkit.rest.git.createCommit(Object.assign({ message: 'Initial commit', tree: tree.data.sha, parents: [] }, context.repo));
+                    const commit = yield toolkit.rest.git.createCommit(Object.assign({ message: 'Initial commit', tree: SHA1_EMPTY_TREE, parents: [] }, context.repo));
                     sha = commit.data.sha;
                 }
                 yield toolkit.rest.git.createRef(Object.assign({ ref: `refs/heads/${branch}`, sha: sha || context.sha }, context.repo));
