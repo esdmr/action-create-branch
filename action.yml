@@ -12,7 +12,7 @@ inputs:
     description: 'The SHA1 value for the branch reference'
     required: false
   orphan:
-    description: 'Create a commit pointing to a empty tree and use its sha'
+    description: 'If a commit should be created pointing to a empty tree and use its sha'
     default: 'false'
     required: false
 runs:

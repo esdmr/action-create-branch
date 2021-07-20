@@ -6,11 +6,16 @@ This action creates a new branch with the same commit reference as the branch it
 
 ### `branch`
 
-**Optional** The name of the branch to create. Default `"release-candidate"`.
+**Required** The name of the branch to create.
 
 ### `sha`
 
 **Optional** The SHA1 value for the branch reference.
+
+### `orphan`
+
+**Optional** If a commit should be created pointing to a empty tree and use its
+sha. `true` to enable.
 
 ## Example usage
 
