@@ -2,14 +2,19 @@ name: 'Create Branch'
 description: 'Creates a branch'
 author: 'Peter Grainger (peter@grainger)'
 branding:
-  icon: 'git-branch' 
+  icon: 'git-branch'
   color: 'green'
 inputs:
   branch:
     description: 'The branch to create'
-    default: 'release-candidate'
+    required: true
   sha:
     description: 'The SHA1 value for the branch reference'
+    required: false
+  orphan:
+    description: 'Create a commit pointing to a empty tree and use its sha'
+    default: 'false'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

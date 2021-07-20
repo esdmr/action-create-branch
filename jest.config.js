@@ -1,5 +1,10 @@
 module.exports = {
   clearMocks: true,
+  globals: {
+    'ts-jest': {
+      packageJson: 'package.json',
+    },
+  },
   moduleFileExtensions: ['js', 'ts'],
   testEnvironment: 'node',
   testMatch: ['**/*.test.ts'],
@@ -7,5 +12,5 @@ module.exports = {
   transform: {
     '^.+\\.ts$': 'ts-jest'
   },
-  verbose: true
+  verbose: true,
 }
