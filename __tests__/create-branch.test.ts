@@ -1,4 +1,4 @@
-import { createBranch, SHA1_EMPTY_TREE } from '../src/create-branch'
+import { createBranch } from '../src/create-branch'
 import { readFileSync } from 'fs';
 import { context } from '@actions/github';
 
@@ -7,13 +7,15 @@ describe('Create a branch based on the input', () => {
 
   let branch = 'release-v1';
   let sha = 'ffac537e6cbbf934b08745a378932722df287a53';
+  let shaEmptyTree = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
   let contextMock = JSON.parse(readFileSync('__tests__/context.json', 'utf8'));
   let githubMock = jest.fn();
   let octokitMock = {
     rest: {
       git: {
         createRef: jest.fn(),
-        createCommit: jest.fn()
+        createCommit: jest.fn(),
+        createTree: jest.fn()
       },
       repos: {
         getBranch: jest.fn()
@@ -27,6 +29,12 @@ describe('Create a branch based on the input', () => {
     octokitMock.rest.git.createCommit.mockImplementation(() => ({
       data: {
         sha
+      }
+    }));
+
+    octokitMock.rest.git.createTree.mockImplementation(() => ({
+      data: {
+        sha: shaEmptyTree
       }
     }));
 

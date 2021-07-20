@@ -565,10 +565,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createBranch = exports.SHA1_EMPTY_TREE = void 0;
-// > Git has a well-known, or at least sort-of-well-known, empty tree whose SHA1 ...
-// https://stackoverflow.com/questions/9765453
-exports.SHA1_EMPTY_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
+exports.createBranch = void 0;
 function createBranch(github, context, branch, orphan, sha) {
     return __awaiter(this, void 0, void 0, function* () {
         const toolkit = github(githubToken());
@@ -582,8 +579,9 @@ function createBranch(github, context, branch, orphan, sha) {
         catch (error) {
             if (error.name === 'HttpError' && error.status === 404) {
                 if (orphan) {
-                    const res = yield toolkit.rest.git.createCommit(Object.assign({ message: 'Initial commit', tree: exports.SHA1_EMPTY_TREE, parents: [] }, context.repo));
-                    sha = res.data.sha;
+                    const tree = yield toolkit.rest.git.createTree(Object.assign({ tree: [] }, context.repo));
+                    const commit = yield toolkit.rest.git.createCommit(Object.assign({ message: 'Initial commit', tree: tree.data.sha, parents: [] }, context.repo));
+                    sha = commit.data.sha;
                 }
                 yield toolkit.rest.git.createRef(Object.assign({ ref: `refs/heads/${branch}`, sha: sha || context.sha }, context.repo));
                 return true;

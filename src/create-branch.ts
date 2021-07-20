@@ -1,10 +1,6 @@
 import { Context } from "@actions/github/lib/context";
 import { getOctokit } from "@actions/github";
 
-// > Git has a well-known, or at least sort-of-well-known, empty tree whose SHA1 ...
-// https://stackoverflow.com/questions/9765453
-export const SHA1_EMPTY_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
-
 type GitHub = ReturnType<typeof getOctokit>;
 
 export async function createBranch(github: any, context: Context, branch: string, orphan: boolean, sha?: string) {
@@ -23,14 +19,19 @@ export async function createBranch(github: any, context: Context, branch: string
     } catch(error) {
       if(error.name === 'HttpError' && error.status === 404) {
         if(orphan) {
-          const res = await toolkit.rest.git.createCommit({
+          const tree = await toolkit.rest.git.createTree({
+            tree: [],
+            ...context.repo
+          });
+
+          const commit = await toolkit.rest.git.createCommit({
             message: 'Initial commit',
-            tree: SHA1_EMPTY_TREE,
+            tree: tree.data.sha,
             parents: [],
             ...context.repo
           });
 
-          sha = res.data.sha;
+          sha = commit.data.sha;
         }
 
         await toolkit.rest.git.createRef({
