@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import { context, getOctokit } from '@actions/github'
 import { createBranch } from './create-branch';
+import { inspect, InspectOptions } from 'util';
 
 async function run() {
   try {
@@ -19,8 +20,15 @@ async function run() {
     }
   } catch (error) {
     core.debug(error.stack ?? 'Undefined stack');
-    core.debug('request: ' + JSON.stringify(error.request ?? {}));
-    core.debug('response: ' + JSON.stringify(error.response ?? {}));
+
+    const inspectOptions: InspectOptions = {
+      colors: true,
+      depth: Infinity,
+    };
+
+    core.debug('request: ' + inspect(error.request ?? {}, inspectOptions));
+    core.debug('response: ' + inspect(error.response ?? {}, inspectOptions));
+
     core.setFailed(error.message ?? 'Unknown error');
   }
 }

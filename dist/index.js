@@ -4745,6 +4745,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(147));
 const github_1 = __webpack_require__(55);
 const create_branch_1 = __webpack_require__(139);
+const util_1 = __webpack_require__(669);
 function run() {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
@@ -4763,8 +4764,12 @@ function run() {
         }
         catch (error) {
             core.debug((_a = error.stack) !== null && _a !== void 0 ? _a : 'Undefined stack');
-            core.debug('request: ' + JSON.stringify((_b = error.request) !== null && _b !== void 0 ? _b : {}));
-            core.debug('response: ' + JSON.stringify((_c = error.response) !== null && _c !== void 0 ? _c : {}));
+            const inspectOptions = {
+                colors: true,
+                depth: Infinity,
+            };
+            core.debug('request: ' + util_1.inspect((_b = error.request) !== null && _b !== void 0 ? _b : {}, inspectOptions));
+            core.debug('response: ' + util_1.inspect((_c = error.response) !== null && _c !== void 0 ? _c : {}, inspectOptions));
             core.setFailed((_d = error.message) !== null && _d !== void 0 ? _d : 'Unknown error');
         }
     });
