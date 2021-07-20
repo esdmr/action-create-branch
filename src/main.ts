@@ -19,6 +19,8 @@ async function run() {
     }
   } catch (error) {
     core.debug(error.stack ?? 'Undefined stack');
+    core.debug('request: ' + JSON.stringify(error.request ?? {}));
+    core.debug('response: ' + JSON.stringify(error.response ?? {}));
     core.setFailed(error.message ?? 'Unknown error');
   }
 }

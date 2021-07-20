@@ -42,7 +42,7 @@ export async function createBranch(github: any, context: Context, branch: string
 
         return true;
       } else {
-        throw Error(error)
+        throw error
       }
     }
 }
