@@ -4746,6 +4746,7 @@ const core = __importStar(__webpack_require__(147));
 const github_1 = __webpack_require__(55);
 const create_branch_1 = __webpack_require__(139);
 function run() {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const branch = core.getInput('branch');
@@ -4761,7 +4762,8 @@ function run() {
             }
         }
         catch (error) {
-            core.setFailed(error.message);
+            core.debug((_a = error.stack) !== null && _a !== void 0 ? _a : 'Undefined stack');
+            core.setFailed((_b = error.message) !== null && _b !== void 0 ? _b : 'Unknown error');
         }
     });
 }

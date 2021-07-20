@@ -19,17 +19,8 @@ export async function createBranch(github: any, context: Context, branch: string
     } catch(error) {
       if(error.name === 'HttpError' && error.status === 404) {
         if(orphan) {
-          const blob = await toolkit.rest.git.createBlob({
-            content: '',
-            ...context.repo
-          });
-
           const tree = await toolkit.rest.git.createTree({
-            tree: [{
-              path: '.tree',
-              mode: '100644',
-              ...blob.data
-            }],
+            tree: [],
             ...context.repo
           });
 
