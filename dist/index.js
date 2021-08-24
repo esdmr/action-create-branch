@@ -567,26 +567,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createBranch = void 0;
 const SHA1_EMPTY_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
-function createBranch(github, context, branch, orphan, sha) {
+function createBranch(github, context, branch, orphan, sha, debug, inspect) {
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         const toolkit = github(githubToken());
         // Sometimes branch might come in with refs/heads already
         branch = branch.replace('refs/heads/', '');
-        // throws HttpError if branch already exists.
+        // throws HttpError if branch already does not exist.
         try {
-            yield toolkit.rest.repos.getBranch(Object.assign(Object.assign({}, context.repo), { branch }));
+            debug === null || debug === void 0 ? void 0 : debug('Checking if the branch exists…');
+            const branch_ = yield toolkit.rest.repos.getBranch(Object.assign(Object.assign({}, context.repo), { branch }));
+            debug === null || debug === void 0 ? void 0 : debug((_a = inspect === null || inspect === void 0 ? void 0 : inspect(branch_)) !== null && _a !== void 0 ? _a : '');
             return false;
         }
         catch (error) {
             if (error.name === 'HttpError' && error.status === 404) {
+                debug === null || debug === void 0 ? void 0 : debug('Branch does not exist');
                 if (orphan) {
+                    debug === null || debug === void 0 ? void 0 : debug('Requested to create a orphan branch, creating a empty tree…');
                     const commit = yield toolkit.rest.git.createCommit(Object.assign({ message: 'Initial commit', tree: SHA1_EMPTY_TREE, parents: [] }, context.repo));
+                    debug === null || debug === void 0 ? void 0 : debug('Created the commit');
+                    debug === null || debug === void 0 ? void 0 : debug((_b = inspect === null || inspect === void 0 ? void 0 : inspect(commit)) !== null && _b !== void 0 ? _b : '');
                     sha = commit.data.sha;
                 }
-                yield toolkit.rest.git.createRef(Object.assign({ ref: `refs/heads/${branch}`, sha: sha || context.sha }, context.repo));
+                debug === null || debug === void 0 ? void 0 : debug('Creating a new branch…');
+                const ref = yield toolkit.rest.git.createRef(Object.assign({ ref: `refs/heads/${branch}`, sha: sha || context.sha }, context.repo));
+                debug === null || debug === void 0 ? void 0 : debug('Created the new branch');
+                debug === null || debug === void 0 ? void 0 : debug((_c = inspect === null || inspect === void 0 ? void 0 : inspect(ref)) !== null && _c !== void 0 ? _c : '');
                 return true;
             }
             else {
+                debug === null || debug === void 0 ? void 0 : debug('Something gone wrong');
                 throw error;
             }
         }
@@ -4747,14 +4758,20 @@ const github_1 = __webpack_require__(55);
 const create_branch_1 = __webpack_require__(139);
 const util_1 = __webpack_require__(669);
 function run() {
-    var _a, _b, _c, _d;
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        const inspectOptions = {
+            colors: true,
+            depth: Infinity,
+        };
         try {
             const branch = core.getInput('branch');
             const sha = core.getInput('sha');
             const orphan = core.getInput('orphan') === 'true';
             core.debug(`Creating branch ${branch}`);
-            const didCreateBranch = yield create_branch_1.createBranch(github_1.getOctokit, github_1.context, branch, orphan, sha);
+            core.debug(`sha: ${sha}`);
+            core.debug(`orphan: ${orphan}`);
+            const didCreateBranch = yield create_branch_1.createBranch(github_1.getOctokit, github_1.context, branch, orphan, sha, core.debug.bind(core), (object) => util_1.inspect(object, inspectOptions));
             if (didCreateBranch) {
                 core.info(`Created new branch ${branch}`);
             }
@@ -4763,14 +4780,8 @@ function run() {
             }
         }
         catch (error) {
-            core.debug((_a = error.stack) !== null && _a !== void 0 ? _a : 'Undefined stack');
-            const inspectOptions = {
-                colors: true,
-                depth: Infinity,
-            };
-            core.debug('request: ' + util_1.inspect((_b = error.request) !== null && _b !== void 0 ? _b : {}, inspectOptions));
-            core.debug('response: ' + util_1.inspect((_c = error.response) !== null && _c !== void 0 ? _c : {}, inspectOptions));
-            core.setFailed((_d = error.message) !== null && _d !== void 0 ? _d : 'Unknown error');
+            core.debug('error: ' + util_1.inspect(error !== null && error !== void 0 ? error : {}, inspectOptions));
+            core.setFailed((_a = error.message) !== null && _a !== void 0 ? _a : 'Unknown error');
         }
     });
 }
