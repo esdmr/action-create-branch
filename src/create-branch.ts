@@ -2,7 +2,6 @@ import { Context } from "@actions/github/lib/context";
 import { getOctokit } from "@actions/github";
 
 type GitHub = ReturnType<typeof getOctokit>;
-const SHA1_EMPTY_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
 
 export async function createBranch(github: any, context: Context, branch: string, orphan: boolean, sha?: string, debug?: (message: string) => void, inspect?: (object: any) => string) {
   const toolkit : GitHub = github(githubToken());
@@ -28,9 +27,23 @@ export async function createBranch(github: any, context: Context, branch: string
       if(orphan) {
         debug?.('Requested to create a orphan branch, creating a empty tree…');
 
+        const tree = await toolkit.rest.git.createTree({
+          tree: [{
+            path: '.keep',
+            type: 'blob',
+            mode: '100644',
+            content: ''
+          }],
+          ...context.repo
+        });
+
+        debug?.('Created the tree');
+        debug?.(inspect?.(tree) ?? '');
+        debug?.('Creating a commit');
+
         const commit = await toolkit.rest.git.createCommit({
           message: 'Initial commit',
-          tree: SHA1_EMPTY_TREE,
+          tree: tree.data.sha,
           parents: [],
           ...context.repo
         });

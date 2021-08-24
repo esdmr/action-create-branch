@@ -566,9 +566,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createBranch = void 0;
-const SHA1_EMPTY_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
 function createBranch(github, context, branch, orphan, sha, debug, inspect) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         const toolkit = github(githubToken());
         // Sometimes branch might come in with refs/heads already
@@ -585,15 +584,24 @@ function createBranch(github, context, branch, orphan, sha, debug, inspect) {
                 debug === null || debug === void 0 ? void 0 : debug('Branch does not exist');
                 if (orphan) {
                     debug === null || debug === void 0 ? void 0 : debug('Requested to create a orphan branch, creating a empty tree…');
-                    const commit = yield toolkit.rest.git.createCommit(Object.assign({ message: 'Initial commit', tree: SHA1_EMPTY_TREE, parents: [] }, context.repo));
+                    const tree = yield toolkit.rest.git.createTree(Object.assign({ tree: [{
+                                path: '.keep',
+                                type: 'blob',
+                                mode: '100644',
+                                content: ''
+                            }] }, context.repo));
+                    debug === null || debug === void 0 ? void 0 : debug('Created the tree');
+                    debug === null || debug === void 0 ? void 0 : debug((_b = inspect === null || inspect === void 0 ? void 0 : inspect(tree)) !== null && _b !== void 0 ? _b : '');
+                    debug === null || debug === void 0 ? void 0 : debug('Creating a commit');
+                    const commit = yield toolkit.rest.git.createCommit(Object.assign({ message: 'Initial commit', tree: tree.data.sha, parents: [] }, context.repo));
                     debug === null || debug === void 0 ? void 0 : debug('Created the commit');
-                    debug === null || debug === void 0 ? void 0 : debug((_b = inspect === null || inspect === void 0 ? void 0 : inspect(commit)) !== null && _b !== void 0 ? _b : '');
+                    debug === null || debug === void 0 ? void 0 : debug((_c = inspect === null || inspect === void 0 ? void 0 : inspect(commit)) !== null && _c !== void 0 ? _c : '');
                     sha = commit.data.sha;
                 }
                 debug === null || debug === void 0 ? void 0 : debug('Creating a new branch…');
                 const ref = yield toolkit.rest.git.createRef(Object.assign({ ref: `refs/heads/${branch}`, sha: sha || context.sha }, context.repo));
                 debug === null || debug === void 0 ? void 0 : debug('Created the new branch');
-                debug === null || debug === void 0 ? void 0 : debug((_c = inspect === null || inspect === void 0 ? void 0 : inspect(ref)) !== null && _c !== void 0 ? _c : '');
+                debug === null || debug === void 0 ? void 0 : debug((_d = inspect === null || inspect === void 0 ? void 0 : inspect(ref)) !== null && _d !== void 0 ? _d : '');
                 return true;
             }
             else {

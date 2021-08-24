@@ -70,15 +70,6 @@ describe('Create a branch based on the input', () => {
     })
   })
 
-  it('Creates a new orphan branch', async () => {
-    octokitMock.rest.repos.getBranch.mockRejectedValue(new HttpError())
-    await createBranch(githubMock, contextMock, branch, true)
-    expect(octokitMock.rest.git.createRef).toHaveBeenCalledWith({
-      ref: 'refs/heads/release-v1',
-      sha: 'ffac537e6cbbf934b08745a378932722df287a53'
-    })
-  })
-
   it('Replaces refs/heads in branch name', async () => {
     octokitMock.rest.repos.getBranch.mockRejectedValue( new HttpError())
     await createBranch(githubMock, contextMock, `refs/heads/${branch}`, false)
